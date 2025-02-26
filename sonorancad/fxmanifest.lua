@@ -3,7 +3,7 @@ games {'gta5'}
 
 author 'Sonoran CAD'
 description 'Sonoran CAD FiveM Integration'
-version '3.1.0'
+version '3.1.4'
 
 server_scripts {
     'core/http.js'
@@ -43,7 +43,8 @@ files {
     'core/client_nui/js/*.js',
     'core/client_nui/sounds/*.mp3',
     'core/client_nui/img/logo.gif',
-    'submodules/**/*.mp3'
+    'submodules/**/*.mp3',
+    'submodules/postals/*.json'
 }
 
 data_file 'DLC_ITYP_REQUEST' 'stream/**/*.ytyp'

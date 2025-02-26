@@ -260,7 +260,7 @@ RegisterNetEvent('SonoranCAD::core::ScreenshotOff', function()
     end
 end)
 
-RegisterNetEvent('SonoranCAD::Core::InitBodycam', function(isReady)
+RegisterNetEvent('SonoranCAD::Core::InitBodycam', function(isReady, apiVersion)
     if isReady == 0 then
         CreateThread(function()
             -- still waiting, request again in 10s
@@ -269,6 +269,9 @@ RegisterNetEvent('SonoranCAD::Core::InitBodycam', function(isReady)
             TriggerServerEvent('SonoranCAD::Core::RequestBodycam')
         end)
         return
+    end
+    if apiVersion ~= -1 then
+        Config.apiVersion = apiVersion
     end
     if Config.bodycamEnabled then
         print('Bodycam init')
@@ -383,6 +386,18 @@ AddEventHandler('playerSpawned', function()
     TriggerServerEvent('SonoranCAD::core:PlayerReady')
     inited = true
     TriggerServerEvent('SonoranCAD::Core::RequestBodycam')
+end)
+
+AddEventHandler('onClientResourceStart', function(resourceName) --When resource starts, stop the GUI showing.
+	if(GetCurrentResourceName() ~= resourceName) then
+		return
+	end
+    Wait(10000)
+    if not inited then
+        TriggerServerEvent('SonoranCAD::core:PlayerReady')
+        inited = true
+        TriggerServerEvent('SonoranCAD::Core::RequestBodycam')
+    end
 end)
 
 RegisterNetEvent('SonoranCAD::core:debugModeToggle')
