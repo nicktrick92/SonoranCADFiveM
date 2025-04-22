@@ -28,6 +28,7 @@ jobs:
         run: |
           git clone https://github.com/Sonoran-Software/wk_wars2x.git wk_wars2x
           git clone https://github.com/Sonoran-Software/id_card_ui.git sonoran_idcard
+          git clone https://github.com/DevBlocky/nearest-postal.git nearest-postal
         shell: bash
 
       - name: Cleanup & Zip Directories
