@@ -17,16 +17,13 @@ local function LoadVersionFile()
 end
 
 function CheckForPluginUpdate(name)
+    local check_url = 'https://raw.githubusercontent.com/Sonoran-Software/SonoranCADFiveM/refs/heads/master/sonorancad/version.json'
     local plugin = Config.plugins[name]
-    plugin.check_url = 'https://raw.githubusercontent.com/Sonoran-Software/SonoranCADFiveM/refs/heads/master/sonorancad/version.json'
     if plugin == nil then
         errorLog(("Submodule %s not found."):format(name))
         return
-    elseif plugin.check_url == nil or plugin.check_url == "" then
-        debugLog(("Submodule %s does not have check_url set. Is it configured correctly?"):format(name))
-        return
     end
-    PerformHttpRequestS(plugin.check_url, function(code, data, headers)
+    PerformHttpRequestS(check_url, function(code, data, headers)
         if code == 200 then
             local remote = json.decode(data)
             if remote == nil then
