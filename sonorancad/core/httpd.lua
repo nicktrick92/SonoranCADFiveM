@@ -257,8 +257,16 @@ local PushEventHandler = {
 	end
 }
 
-RegisterNetEvent('SonoranCAD::RegisterPushEvent', function(type, event)
-	PushEventHandler[type] = event
+---@type { [string]: function[] }
+local CustomPushEventHandlers = {}
+
+RegisterNetEvent('SonoranCAD::RegisterPushEvent', function(eventName, eventHandler)
+	if not eventName or not eventHandler then return end
+	if CustomPushEventHandlers[eventName] == nil then
+		CustomPushEventHandlers[eventName] = {}
+	end
+	debugLog(('Registered custom push event %s'):format(eventName))
+	table.insert(CustomPushEventHandlers[eventName], eventHandler)
 end)
 
 SetHttpHandler(function(req, res)
@@ -392,6 +400,22 @@ SetHttpHandler(function(req, res)
 				else
 					TriggerEvent('SonoranCAD::pushevents:OtherEvent', body.type:upper(), body.data)
 					res.send('ok - custom')
+				end
+
+				if CustomPushEventHandlers[body.type:upper()] then
+					for index, customEvent in ipairs(CustomPushEventHandlers[body.type:upper()]) do
+						local success, result = pcall(customEvent, body)
+						if success then
+							debugLog(('Custom event handler %s (%s) succeeded!'):format(body.type:upper(), index))
+						else
+							if not result then
+								result = 'error'
+							end
+							debugLog(('Custom event handler %s (%s) failed with result: %s'):format(body.type:upper(), index, result))
+						end
+					end
+				else
+					debugLog('No custom push event handlers for push event: ' .. body.type:upper())
 				end
 			end
 		end)
