@@ -258,6 +258,10 @@ local PushEventHandler = {
 	EVENT_TONE = function(body)
 		TriggerEvent('SonoranCAD::pushevents:Tone', body.data)
 		return true
+	end,
+	EVENT_CHAR_SELECTED = function(body)
+		TriggerEvent('SonoranCAD::pushevents:CharacterSelected', body.data)
+		return true
 	end
 }
 
