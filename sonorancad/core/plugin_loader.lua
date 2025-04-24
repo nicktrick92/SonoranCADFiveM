@@ -102,7 +102,7 @@ CreateThread(function()
         end
         local versionFile = json.decode(vfile)
         if Config.plugins[k].enabled then
-            if versionFile.submoduleConfigs[k].requiresPlugins ~= nil then
+            if versionFile.submoduleConfigs[k] ~= nil and versionFile.submoduleConfigs[k].requiresPlugins ~= nil then
                 for _, plugin in pairs(versionFile.submoduleConfigs[k].requiresPlugins) do
                     local isCritical = plugin.critical
                     if Config.plugins[plugin.name] == nil or not Config.plugins[plugin.name].enabled then
