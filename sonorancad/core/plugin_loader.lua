@@ -74,17 +74,25 @@ CreateThread(function()
     Wait(5000)
     while Config.apiVersion == -1 do Wait(10) end
     if Config.critError then logError("ERROR_ABORT") end
+
+    local versionFile = nil
+    local vfile = LoadVersionFile()
+    if vfile == nil then
+        warnLog("Unable to load local plugin version file")
+        goto skip
+    end
+    versionFile = json.decode(vfile)
+    if versionFile == nil then
+        warnLog("Unable to parse local plugin version file")
+        goto skip
+    end
+
     for k, v in pairs(Config.plugins) do
         if Config.critError then
             Config.plugins[k].enabled = false
             Config.plugins[k].disableReason = "Startup aborted"
             goto skip
         end
-        local vfile = LoadVersionFile(k)
-        if vfile == nil then
-            goto skip
-        end
-        local versionFile = json.decode(vfile)
         if Config.plugins[k].enabled then
             if versionFile.submoduleConfigs[k] ~= nil and versionFile.submoduleConfigs[k].requiresPlugins ~= nil then
                 for _, plugin in pairs(versionFile.submoduleConfigs[k].requiresPlugins) do
