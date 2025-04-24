@@ -9,7 +9,7 @@
 local function LoadVersionFile()
     local f = LoadResourceFile(GetCurrentResourceName(), ("version.json"))
     if f then
-    return f
+        return f
     else
         warnLog(("Failed to load version file from /sonorancad/version.json Check to see if the file exists."))
         return nil
@@ -28,11 +28,15 @@ function CheckForPluginUpdate(name)
             local remote = json.decode(data)
             if remote == nil then
                 if plugin.enabled then
-                    warnLog(("Failed to get a valid response for %s. Skipping."):format(k))
-                    debugLog(("Raw output for %s: %s"):format(k, data))
+                    warnLog(("Failed to get a valid response for %s. Skipping."):format(name))
                 end
-            elseif remote.submoduleConfigs[name] == nil and plugin.enabled then
-                warnLog(("Failed to check submodule updates for %s: submodule was not found in the updater manifest... if this is a custom submodule you can ignore this warning"):format(name))
+                debugLog(("Raw output for %s request to %s: %s"):format(name, check_url, data))
+            elseif remote.submoduleConfigs[name] == nil then
+                if plugin.enabled then
+                    warnLog(("Failed to check submodule updates for %s: submodule was not found in the updater manifest... if this is a custom submodule you can ignore this warning"):format(name))
+                else
+                    debugLog(("Disabled submodule was not found in remote updater manifest: %s"):format(name))
+                end
             elseif (remote.submoduleConfigs[name].version == nil) then
                 warnLog(("Submodule was found, but no version was found in remote updater manifest for plugin %s."):format(name))
             else
