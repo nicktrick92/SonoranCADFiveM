@@ -33,8 +33,16 @@ function CheckForPluginUpdate(name)
                 end
             elseif remote.submoduleConfigs[name] == nil and plugin.enabled then
                 warnLog(("Failed to check submodule updates for %s: submodule was not found in the updater manifest... if this is a custom submodule you can ignore this warning"):format(name))
-            elseif (remote.submoduleConfigs[name].version ~= nil and plugin.configVersion ~= nil) then
-                local configCompare = compareVersions(remote.submoduleConfigs[name].version, plugin.configVersion)
+            elseif (remote.submoduleConfigs[name].version == nil) then
+                warnLog(("Submodule was found, but no version was found in remote updater manifest for plugin %s."):format(name))
+            else
+                local currentVersion = plugin.configVersion or plugin.pluginVersion or nil
+                if currentVersion == nil then
+                    errorLog(("No current version was found in the config for submodule %s. This warning could be ignored for custom submodules."):format(name))
+                    return
+                end
+
+                local configCompare = compareVersions(remote.submoduleConfigs[name].version, currentVersion)
                 if configCompare.result and not Config.debugMode then
                     if plugin.enabled then
                         errorLog(("Submodule Updater: %s has a new configuration version. You should look at the template configuration file (%s_config.dist.lua) and update your configuration before using this submodule. Guide: https://sonoran.link/config-update"):format(name, name))
@@ -53,30 +61,6 @@ function CheckForPluginUpdate(name)
                         backupFile:close()
                         os.remove(("%s/configuration/%s_config.dist.lua"):format(GetResourcePath(GetCurrentResourceName()), name))
                         debugLog(("Submodule %s configuration file is up to date. Backup saved."):format(name))
-                    end
-                end
-            elseif name == 'locations' then
-                if (remote.submoduleConfigs[name].version ~= nil and plugin.pluginVersion ~= nil) then
-                    local configCompare = compareVersions(remote.submoduleConfigs[name].version, plugin.pluginVersion)
-                    if configCompare.result and not Config.debugMode then
-                        if plugin.enabled then
-                            errorLog(("Submodule Updater: %s has a new configuration version. You should look at the template configuration file (%s_config.dist.lua) and update your configuration before using this submodule."):format(name, name))
-                            Config.plugins[name].enabled = false
-                            Config.plugins[name].disableReason = "outdated config file"
-                        end
-                    else
-                        debugLog(("Submodule %s has the same configuration version."):format(name))
-                        local distConfig = LoadResourceFile(GetCurrentResourceName(), ("/configuration/%s_config.dist.lua"):format(name))
-                        local normalConfig = LoadResourceFile(GetCurrentResourceName(), ("/configuration/%s_config.lua"):format(name))
-                        if distConfig and normalConfig then
-                            local filePath = ("%s/configuration/config-backup"):format(GetResourcePath(GetCurrentResourceName()))
-                            exports['sonorancad']:CreateFolderIfNotExisting(filePath)
-                            local backupFile = io.open(("%s/configuration/config-backup/%s_config.lua"):format(GetResourcePath(GetCurrentResourceName()), name), "w")
-                            backupFile:write(distConfig)
-                            backupFile:close()
-                            os.remove(("%s/configuration/%s_config.dist.lua"):format(GetResourcePath(GetCurrentResourceName()), name))
-                            debugLog(("Submodule %s configuration file is up to date. Backup saved."):format(name))
-                        end
                     end
                 end
             end
