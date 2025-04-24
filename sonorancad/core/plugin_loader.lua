@@ -61,6 +61,11 @@ function CheckForPluginUpdate(name)
                         local filePath = ("%s/configuration/config-backup"):format(GetResourcePath(GetCurrentResourceName()))
                         exports['sonorancad']:CreateFolderIfNotExisting(filePath)
                         local backupFile = io.open(("%s/configuration/config-backup/%s_config.lua"):format(GetResourcePath(GetCurrentResourceName()), name), "w")
+                        if backupFile == nil then
+                            errorLog(("Unable to open config backup file for sub module %s."):format(name))
+                            return
+                        end
+
                         backupFile:write(distConfig)
                         backupFile:close()
                         os.remove(("%s/configuration/%s_config.dist.lua"):format(GetResourcePath(GetCurrentResourceName()), name))
