@@ -332,7 +332,7 @@ if pluginConfig.enabled then
                         debugPrint("Failed to extract recordId from response: " .. json.encode(response))
                     end
                 else
-                    print("Invalid or missing 'id' in response")
+                    warnLog("Invalid or missing 'id' in response")
                 end
             end)
             -- LICENSE RECORD
@@ -399,7 +399,7 @@ if pluginConfig.enabled then
                         debugPrint("Failed to extract recordId from response: " .. json.encode(response))
                     end
                 else
-                    print("Invalid or missing 'id' in response")
+                    warnLog("Invalid or missing 'id' in response")
                 end
             end)
             if vehData.bolo then
