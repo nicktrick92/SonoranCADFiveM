@@ -251,8 +251,16 @@ local PushEventHandler = {
 		TriggerEvent('SonoranCAD::pushevents:UnitGroupRemove', body.data)
 		return true
 	end,
+	EVENT_UNIT_GROUP_CHANGE_NAME = function(body)
+		TriggerEvent('SonoranCAD::pushevents:UnitGroupRename', body.data)
+		return true
+	end,
 	EVENT_TONE = function(body)
 		TriggerEvent('SonoranCAD::pushevents:Tone', body.data)
+		return true
+	end,
+	EVENT_CHAR_SELECTED = function(body)
+		TriggerEvent('SonoranCAD::pushevents:CharacterSelected', body.data)
 		return true
 	end
 }
