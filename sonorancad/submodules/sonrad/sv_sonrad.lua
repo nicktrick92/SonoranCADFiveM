@@ -363,25 +363,27 @@ CreateThread(function() Config.LoadPlugin("sonrad", function(pluginConfig)
                 TriggerClientEvent("SonoranCAD::sonrad:GetUnitInfo:Return", source, unit)
             end
         end)
-    end
-    if not pluginConfig.syncRadioName then
-        pluginConfig.syncRadioName = {
-            enabled = false, -- should the radio name be synced with the CAD?
-            nameFormat = "{UNIT_NUMBER} | {UNIT_NAME}" -- format of the radio name | available variables: {UNIT_NUMBER}, {UNIT_NAME}
-        }
-        warnLog('Missing critial configuration for Sonrad. Missing syncRadioName configuration, using default values... Please update from sonrad_config.dist.lua')
-    end
-    AddEventHandler('SonoranCAD::pushevents:UnitLogin', function(unit)
-        if pluginConfig.syncRadioName.enabled then
-            local radioName = pluginConfig.syncRadioName.nameFormat
-            radioName = radioName:gsub("{UNIT_NUMBER}", unit.data.unitNum)
-            radioName = radioName:gsub("{UNIT_NAME}", unit.data.name)
-            local postData = {
-                identity = unit.accId,
-                name = radioName
+
+        if not pluginConfig.syncRadioName then
+            pluginConfig.syncRadioName = {
+                enabled = false, -- should the radio name be synced with the CAD?
+                nameFormat = "{UNIT_NUMBER} | {UNIT_NAME}" -- format of the radio name | available variables: {UNIT_NUMBER}, {UNIT_NAME}
             }
-            exports['sonoranradio']:serverNameChange(postData)
+            warnLog('Missing critial configuration for Sonrad. Missing syncRadioName configuration, using default values... Please update from sonrad_config.dist.lua')
         end
-    end)
+        AddEventHandler('SonoranCAD::pushevents:UnitLogin', function(unit)
+            if pluginConfig.syncRadioName.enabled then
+                local radioName = pluginConfig.syncRadioName.nameFormat
+                radioName = radioName:gsub("{UNIT_NUMBER}", unit.data.unitNum)
+                radioName = radioName:gsub("{UNIT_NAME}", unit.data.name)
+                local postData = {
+                    identity = unit.accId,
+                    name = radioName
+                }
+                exports['sonoranradio']:serverNameChange(postData)
+            end
+        end)
+
+    end
 
 end) end)
