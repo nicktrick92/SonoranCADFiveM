@@ -100,28 +100,28 @@ local config = {
         licenseTypeConfigs = {
             DRIVER = {
                 type = "DRIVER",
-                is_valid = "is_license_car_valid",
-                license = "license_car",
+                is_valid = "License_Car_Is_Valid",
+                license = "License_Car",
             },
             MOTORCYCLE = {
                 type = "MOTORCYCLE",
-                is_valid = "is_license_bike_valid",
-                license = "license_bike",
+                is_valid = "License_Bike_Is_Valid",
+                license = "License_Bike",
             },
             BOAT = {
                 type = "BOAT",
-                is_valid = "is_license_boat_valid",
-                license = "license_boat",
+                is_valid = "License_Boat_Is_Valid",
+                license = "License_Boat",
             },
             PILOT = {
                 type = "PILOT",
-                is_valid = "is_license_pilot_valid",
-                license = "license_pilot",
+                is_valid = "License_Pilot_Is_Valid",
+                license = "License_Pilot",
             },
             CDL = {
                 type = "CDL",
-                is_valid = "is_license_truck_valid",
-                license = "license_truck",
+                is_valid = "License_Truck_Is_Valid",
+                license = "License_Truck",
             },
         },
         licenseRecordValues = {
@@ -136,12 +136,12 @@ local config = {
                 return os.date("%m/%d/%Y", os.time() + (60 * 60 * 24 * 365)) -- +1 year
             end,
             -- Civilian Information
-            ["first"] = "first_name",
-            ["last"] = "last_name",
+            ["first"] = "FirstName",
+            ["last"] = "LastName",
             ["mi"] = "", -- No M.I. mapped
-            ["dob"] = "dob",
+            ["dob"] = "Dob",
             ["age"] = function(pedData)
-                local birth = os.date("*t", os.time({year=tonumber(pedData.dob:sub(7,10)), month=tonumber(pedData.dob:sub(1,2)), day=tonumber(pedData.dob:sub(4,5))}))
+                local birth = os.date("*t", os.time({year=tonumber(pedData.DOB:sub(7,10)), month=tonumber(pedData.DOB:sub(1,2)), day=tonumber(pedData.DOB:sub(4,5))}))
                 local now = os.date("*t")
                 local age = now.year - birth.year
                 if now.month < birth.month or (now.month == birth.month and now.day < birth.day) then
@@ -149,9 +149,9 @@ local config = {
                 end
                 return tostring(age)
             end,
-            ["sex"] = "gender",
-            ["residence"] = "address",
-            ["zip"] = "postalCode",
+            ["sex"] = "Gender",
+            ["residence"] = "Address",
+            ["zip"] = "PostalCode",
         },
         boloRecordID = 3, -- Record ID for BOLO records
         boloRecordValues = {

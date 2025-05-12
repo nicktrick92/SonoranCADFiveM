@@ -343,7 +343,7 @@ if pluginConfig.enabled then
                         ['useDictionary'] = true,
                         ['recordTypeId'] = pluginConfig.customRecords.licenseRecordId
                     }
-                    licenseData.replaceValues = generateReplaceValues(pedData, pluginConfig.customRecords.licenseRecordValues, v)
+                    licenseData.replaceValues = generateLicenseReplaceValues(pedData, pluginConfig.customRecords.licenseRecordValues, v)
                     licenseData.replaceValues[pluginConfig.customRecords.licenseTypeField] = v.type
                     performApiRequest({licenseData}, 'NEW_RECORD', function(_)
                     end)
