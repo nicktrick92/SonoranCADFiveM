@@ -2,7 +2,7 @@ local pendingRestart = false
 
 local function doUnzip(path)
     local unzipPath = GetResourcePath(GetCurrentResourceName()).."/../../"
-    exports[GetCurrentResourceName()]:UnzipFile(path, unzipPath)
+    exports[GetCurrentResourceName()]:UnzipFile(path, unzipPath, updaterIgnore)
 end
 
 AddEventHandler("unzipCoreCompleted", function(success, error)

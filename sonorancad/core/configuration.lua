@@ -302,17 +302,17 @@ Config.LoadPlugin = function(pluginName, cb)
 end
 
 local updateIgnorePath = GetResourcePath(GetCurrentResourceName()) .. '/configuration/updateIgnore.json'
-local defaultIgnorePath = GetResourcePath(GetCurrentResourceName()) .. '/updateIgnore.DEFAULT.json'
+local defaultIgnorePath = GetResourcePath(GetCurrentResourceName()) .. '/updateIgnore.CHANGEME.json'
 
 local updateIgnoreContent = LoadResourceFile(GetCurrentResourceName(), '/configuration/updateIgnore.json')
 
 if not updateIgnoreContent then
-    infoLog('No updateIgnore.json found... attempting to copy default template (updateIgnore.DEFAULT.json)')
+    infoLog('No updateIgnore.json found... attempting to copy default template (updateIgnore.CHANGEME.json)')
 
     if not CopyFile(defaultIgnorePath, updateIgnorePath) then
-        warnLog('Failed to copy updateIgnore.DEFAULT.json to updateIgnore.json')
-        warnLog('Using default ignore list. Please manually copy updateIgnore.DEFAULT.json to updateIgnore.json to suppress this warning.')
-        updateIgnoreContent = LoadResourceFile(GetCurrentResourceName(), '/configuration/updateIgnore.DEFAULT.json')
+        warnLog('Failed to copy updateIgnore.CHANGEME.json to updateIgnore.json')
+        warnLog('Using default ignore list. Please manually copy updateIgnore.CHANGEME.json to updateIgnore.json to suppress this warning.')
+        updateIgnoreContent = LoadResourceFile(GetCurrentResourceName(), '/configuration/updateIgnore.CHANGEME.json')
     else
         updateIgnoreContent = LoadResourceFile(GetCurrentResourceName(), '/configuration/updateIgnore.json')
     end

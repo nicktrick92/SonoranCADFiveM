@@ -1,15 +1,15 @@
 var unzipper = require("unzipper");
 var fs = require("fs");
-let updaterIgnore = { ignore: [] };
+// let updaterIgnore = { ignore: [] };
 
-try {
-	const raw = fs.readFileSync(GetResourcePath(GetCurrentResourceName()) + "/configuration/updateIgnore.json", "utf8");
-	updaterIgnore = JSON.parse(raw);
-} catch (err) {
-	console.warn("Failed to load updateIgnore.json, defaulting to empty ignore list.");
-}
+// try {
+// 	const raw = fs.readFileSync(GetResourcePath(GetCurrentResourceName()) + "/configuration/updateIgnore.json", "utf8");
+// 	updaterIgnore = JSON.parse(raw);
+// } catch (err) {
+// 	console.warn("Failed to load updateIgnore.json, defaulting to empty ignore list.");
+// }
 
-exports('UnzipFile', (file, dest) => {
+exports('UnzipFile', (file, dest, updaterIgnore) => {
 	try {
 		if (!fs.existsSync(file)) {
 			console.error("File does not exist: " + file);
@@ -23,7 +23,7 @@ exports('UnzipFile', (file, dest) => {
 				const type = entry.type;
 				let fileName = entry.path;
 				const finalPath = `${dest}/${fileName}`;
-				const ignoreEntry = updaterIgnore.ignore.find(ignore => finalPath.includes(ignore.path));
+				const ignoreEntry = updaterIgnore.find(ignore => finalPath.includes(ignore.path));
 				if (ignoreEntry) {
 					emit("SonoranCAD::core:writeLog", "info", `IGNORED: ${finalPath} — ${ignoreEntry.reason}`);
 					entry.autodrain();
