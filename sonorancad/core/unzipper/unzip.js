@@ -1,13 +1,5 @@
 var unzipper = require("unzipper");
 var fs = require("fs");
-// let updaterIgnore = { ignore: [] };
-
-// try {
-// 	const raw = fs.readFileSync(GetResourcePath(GetCurrentResourceName()) + "/configuration/updateIgnore.json", "utf8");
-// 	updaterIgnore = JSON.parse(raw);
-// } catch (err) {
-// 	console.warn("Failed to load updateIgnore.json, defaulting to empty ignore list.");
-// }
 
 exports('UnzipFile', (file, dest, updaterIgnore) => {
 	try {
