@@ -20,16 +20,25 @@ exports('UnzipFile', (file, dest, updaterIgnore) => {
 		fs.createReadStream(file)
 			.pipe(unzipper.Parse())
 			.on('entry', function(entry) {
-				const type = entry.type;
-				let fileName = entry.path;
-				const finalPath = `${dest}/${fileName}`;
-				const ignoreEntry = updaterIgnore.find(ignore => finalPath.includes(ignore.path));
+				const type = entry.type; // 'File' or 'Directory'
+				const fileName = entry.path;
+				const finalPath = path.join(dest, fileName);
+
+				if (type === 'Directory') {
+					// Ensure directory exists, but don't try to write to it
+					if (!fs.existsSync(finalPath)) {
+						fs.mkdirSync(finalPath, { recursive: true });
+					}
+					entry.autodrain();
+					return;
+				}
+				const ignoreEntry = updaterIgnore.ignore.find(ignore => finalPath.includes(ignore.path));
 				if (ignoreEntry) {
 					emit("SonoranCAD::core:writeLog", "info", `IGNORED: ${finalPath} — ${ignoreEntry.reason}`);
 					entry.autodrain();
 				} else {
 					// Ensure parent directories exist
-					const dir = require("path").dirname(finalPath);
+					const dir = path.dirname(finalPath);
 					if (!fs.existsSync(dir)) {
 						fs.mkdirSync(dir, { recursive: true });
 					}
@@ -40,7 +49,8 @@ exports('UnzipFile', (file, dest, updaterIgnore) => {
 				emit("unzipCoreCompleted", true);
 			})
 			.on('error', (error) => {
-				emit("unzipCoreCompleted", false, error);
+				console.error("Error during unzip: ", error);
+				emit("unzipCoreCompleted", false, error.toString());
 			});
 	} catch (ex) {
 		console.error("Failed to unzip a file: " + ex);

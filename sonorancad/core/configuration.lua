@@ -302,7 +302,7 @@ Config.LoadPlugin = function(pluginName, cb)
 end
 
 local updateIgnorePath = GetResourcePath(GetCurrentResourceName()) .. '/configuration/updateIgnore.json'
-local defaultIgnorePath = GetResourcePath(GetCurrentResourceName()) .. '/updateIgnore.CHANGEME.json'
+local defaultIgnorePath = GetResourcePath(GetCurrentResourceName()) .. '/configuration/updateIgnore.CHANGEME.json'
 
 local updateIgnoreContent = LoadResourceFile(GetCurrentResourceName(), '/configuration/updateIgnore.json')
 
