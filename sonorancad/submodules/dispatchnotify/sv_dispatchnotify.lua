@@ -224,12 +224,11 @@ if pluginConfig.enabled then
                     if PostalsCache[tonumber(callerPlayerId)] ~= nil then
                         postal = PostalsCache[tonumber(callerPlayerId)]
                     else
+                        warnLog("PostalsCache is nil, please check your postals plugin. Enable debug mode to see more info.")
                         debugLog("Failed to obtain postal. "..json.encode(PostalsCache))
-                        return
                     end
                 else
-                    debugLog("PostalsCache is nil")
-                    return
+                    warnLog('PostalsCache is nil, please check your postals plugin.')
                 end
             end
             if call.metaData ~= nil and call.metaData.useCallLocation == "true" and call.metaData.callPostal ~= nil then
