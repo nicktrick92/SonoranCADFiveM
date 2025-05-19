@@ -219,6 +219,7 @@ if pluginConfig.enabled then
             -- no mapped call, create a new one
             debugLog(("Creating new call request...(no mapped call for %s)"):format(callId))
             local postal = ""
+            local failedToGetPostal = false
             if isPluginLoaded("postals") and callerPlayerId ~= nil then
                 if PostalsCache ~= nil then
                     if PostalsCache[tonumber(callerPlayerId)] ~= nil then
@@ -226,13 +227,18 @@ if pluginConfig.enabled then
                     else
                         warnLog("PostalsCache is nil, please check your postals plugin. Enable debug mode to see more info.")
                         debugLog("Failed to obtain postal. "..json.encode(PostalsCache))
+                        failedToGetPostal = true
                     end
                 else
                     warnLog('PostalsCache is nil, please check your postals plugin.')
+                    failedToGetPostal = true
                 end
+            else
+                debugLog("Postals plugin not loaded, skipping postal code.")
+                failedToGetPostal = true
             end
-            if call.metaData ~= nil and call.metaData.useCallLocation == "true" and call.metaData.callPostal ~= nil then
-                postal = call.metaData.callPostal
+            if call.metaData ~= nil and (call.metaData.useCallLocation == "true" or failedToGetPostal) and call.metaData.postal ~= nil then
+                postal = call.metaData.postal
             end
             local title = "OFFICER RESPONSE - "..call.callId
             if pluginConfig.callTitle ~= nil then
