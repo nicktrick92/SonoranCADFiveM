@@ -63,7 +63,7 @@ if pluginConfig.enabled then
             local garbageTime = v.lastFetched + (pluginConfig.maxCacheTime*1000)
             if currentTime >= garbageTime then
                 LookupCache[k] = nil
-                debugPrint(("Stale lookup purged %s"):format(k))
+                debugLog(("Stale lookup purged %s"):format(k))
             end
         end
         SetTimeout(pluginConfig.stalePurgeTimer*1000, PurgeStaleLookups)

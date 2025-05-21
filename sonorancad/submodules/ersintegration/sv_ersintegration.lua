@@ -10,7 +10,7 @@ local postalConfig = Config.GetPluginConfig("postals")
 
 if pluginConfig.enabled then
     function startErs()
-        debugPrint("Starting ERS Integration...")
+        debugLog("Starting ERS Integration...")
         RegisterNetEvent('SonoranCAD::ErsIntegration::CalloutOffered')
         RegisterNetEvent('SonoranCAD::ErsIntegration::CalloutAccepted')
         RegisterNetEvent('SonoranCAD::ErsIntegration::BuildChars')
@@ -22,6 +22,16 @@ if pluginConfig.enabled then
         local processedPedData = {}
         local processedVehData = {}
         local ersCallouts = {}
+
+        --[[
+        @function escapeSpaces
+        @param string str
+        @return string
+        Used to escape spaces in strings by replacing them with underscores
+        ]]
+        local function escapeSpaces(str)
+            return str:gsub(" ", "_")
+        end
         --[[
         @function generateUniqueCalloutKey
         @param table callout
@@ -30,11 +40,9 @@ if pluginConfig.enabled then
         ]]
         local function generateUniqueCalloutKey(callout)
             return string.format(
-                "%s_%s_%s_%s_%.2f_%.2f_%.2f",
+                "%s_%s_%.2f_%.2f_%.2f",
                 callout.calloutId,
-                callout.FirstName,
-                callout.LastName,
-                callout.StreetName,
+                escapeSpaces(callout.StreetName),
                 callout.Coordinates.x,
                 callout.Coordinates.y,
                 callout.Coordinates.z
@@ -52,14 +60,14 @@ if pluginConfig.enabled then
                 pedData.uniqueId,
                 pedData.FirstName,
                 pedData.LastName,
-                pedData.Address
+                escapeSpaces(pedData.Address)
             )
         end
 
         local function generateUniqueVehDataKey(vehData)
             return string.format(
                 "%s_%s_%s_%s",
-                vehData.license_plate,
+                escapeSpaces(vehData.license_plate),
                 vehData.model,
                 vehData.color,
                 vehData.build_year
@@ -176,8 +184,9 @@ if pluginConfig.enabled then
         if pluginConfig.create911Call then
             AddEventHandler('SonoranCAD::ErsIntegration::CalloutOffered', function(calloutData)
                 local uniqueKey = generateUniqueCalloutKey(calloutData)
+                debugLog('Generated unqiue key for callout: '.. uniqueKey)
                 if processedCalloutOffered[uniqueKey] then
-                    debugPrint("Callout " .. calloutData.calloutId .. " already processed. Skipping 911 call.")
+                    debugLog("Callout " .. calloutData.calloutId .. " already processed. Skipping 911 call.")
                 else
                     local caller = calloutData.FirstName .. " " .. calloutData.LastName
                     local location = calloutData.StreetName
@@ -212,10 +221,10 @@ if pluginConfig.enabled then
                     performApiRequest({data}, 'CALL_911', function(response)
                         local callId = string.match(response, "ID%s+(%d+)")
                         if callId then
-                            processedCalloutOffered[uniqueKey] = tonumber(callId)
-                            debugPrint("Saved call ID:", processedCalloutOffered[uniqueKey])
+                            processedCalloutOffered[uniqueKey] = callId
+                            debugLog("Saved call ID: " .. processedCalloutOffered[uniqueKey])
                         else
-                            debugPrint("Could not extract call ID from response.")
+                            debugLog("Could not extract call ID from response.")
                         end
                     end)
                 end
@@ -228,12 +237,12 @@ if pluginConfig.enabled then
             AddEventHandler('SonoranCAD::ErsIntegration::CalloutAccepted', function(calloutData)
                 local uniqueKey = generateUniqueCalloutKey(calloutData)
                 if processedCalloutAccepted[uniqueKey] then
-                    debugPrint("Callout " .. calloutData.calloutId .. " already processed. Skipping emergency call... adding new units")
+                    debugLog("Callout " .. calloutData.calloutId .. " already processed. Skipping emergency call... adding new units")
                     if pluginConfig.autoAddCall then
                         local callId = processedCalloutAccepted[uniqueKey]
                         local unit = GetUnitByPlayerId(source)
                         if unit == nil then
-                            debugPrint("Unit not found for player ID: " .. source)
+                            debugLog("Unit not found for player ID: " .. source)
                             return
                         end
                         local unitId = unit.data.apiIds[1]
@@ -243,16 +252,16 @@ if pluginConfig.enabled then
                             ['units'] = {unitId}
                         }
                         performApiRequest({data}, 'ATTACH_UNIT', function(response)
-                            debugPrint("Added unit to call: " .. response)
+                            debugLog("Added unit to call: " .. response)
                         end)
                     end
                 else
-                    debugPrint("Processing callout " .. calloutData.calloutId .. " for emergency call.")
+                    debugLog("Processing callout " .. calloutData.calloutId .. " for emergency call.")
                     local callCode = pluginConfig.callCodes[calloutData.CalloutName] or ""
                     local unit = GetUnitByPlayerId(source)
                     local unitId = ""
                     if unit == nil then
-                        debugPrint("Unit not found for player ID: " .. source)
+                        debugLog("Unit not found for player ID: " .. source)
                     else
                         unitId = unit.data.apiIds[1]
                     end
@@ -295,9 +304,9 @@ if pluginConfig.enabled then
                                     debugLog("Remove status: "..tostring(resp))
                                 end)
                             end
-                            debugPrint("Call ID " .. callId .. " saved for unique key: " .. uniqueKey)
+                            debugLog("Call ID " .. callId .. " saved for unique key: " .. uniqueKey)
                         else
-                            debugPrint("Failed to extract callId from response: " .. response)
+                            debugLog("Failed to extract callId from response: " .. response)
                         end
                     end)
                 end
@@ -309,7 +318,7 @@ if pluginConfig.enabled then
         AddEventHandler('SonoranCAD::ErsIntegration::BuildChars', function(pedData)
             local uniqueKey = generateUniquePedDataKey(pedData)
             if processedPedData[uniqueKey] then
-                debugPrint("Ped " .. pedData.FirstName .. " " .. pedData.LastName .. " already processed.")
+                debugLog("Ped " .. pedData.FirstName .. " " .. pedData.LastName .. " already processed.")
                 return
             end
             -- CIVILIAN RECORD
@@ -327,9 +336,9 @@ if pluginConfig.enabled then
                     if recordId then
                         -- Save the recordId in the processedPedData table using the unique key
                         processedPedData[uniqueKey] = recordId
-                        debugPrint("Record ID " .. recordId .. " saved for unique key: " .. uniqueKey)
+                        debugLog("Record ID " .. recordId .. " saved for unique key: " .. uniqueKey)
                     else
-                        debugPrint("Failed to extract recordId from response: " .. json.encode(response))
+                        debugLog("Failed to extract recordId from response: " .. json.encode(response))
                     end
                 else
                     warnLog("Invalid or missing 'id' in response")
@@ -378,7 +387,7 @@ if pluginConfig.enabled then
         AddEventHandler('SonoranCAD::ErsIntegration::BuildVehs', function(vehData)
             local uniqueKey = generateUniqueVehDataKey(vehData)
             if processedVehData[uniqueKey] then
-                debugPrint("Vehicle " .. vehData.model .. " " .. vehData.license_plate .. " already processed.")
+                debugLog("Vehicle " .. vehData.model .. " " .. vehData.license_plate .. " already processed.")
                 return
             end
             local data = {
@@ -394,9 +403,9 @@ if pluginConfig.enabled then
                     if recordId then
                         -- Save the recordId in the processedPedData table using the unique key
                         processedVehData[uniqueKey] = recordId
-                        debugPrint("Record ID " .. recordId .. " saved for unique key: " .. uniqueKey)
+                        debugLog("Record ID " .. recordId .. " saved for unique key: " .. uniqueKey)
                     else
-                        debugPrint("Failed to extract recordId from response: " .. json.encode(response))
+                        debugLog("Failed to extract recordId from response: " .. json.encode(response))
                     end
                 else
                     warnLog("Invalid or missing 'id' in response")
@@ -420,7 +429,7 @@ if pluginConfig.enabled then
         end)
         CreateThread(function()
             Wait(5000)
-            debugPrint('Loading ERS Callouts...')
+            debugLog('Loading ERS Callouts...')
             local calloutData = exports.night_ers.getCallouts()
             for uid, callout in pairs(calloutData) do
                 -- Retain only the first description if it exists, otherwise set to an empty table
@@ -442,9 +451,9 @@ if pluginConfig.enabled then
                 ['serverId'] = Config.serverId,
                 ['callouts'] = ersCallouts
             }
-            debugPrint('Loaded ' .. #ersCallouts .. ' ERS callouts.')
+            debugLog('Loaded ' .. #ersCallouts .. ' ERS callouts.')
             performApiRequest(data, 'SET_AVAILABLE_CALLOUTS', function(response)
-                debugPrint('ERS callouts sent to CAD.')
+                debugLog('ERS callouts sent to CAD.')
             end)
         end)
         --[[
@@ -458,22 +467,22 @@ if pluginConfig.enabled then
             calloutData.callout.newId = calloutID.calloutId
             TriggerClientEvent('SonoranCAD::ErsIntegration::BuildCallout', -1, calloutData.callout)
             if calloutID then
-                debugPrint("Callout " .. calloutID.calloutId .. " created.")
+                debugLog("Callout " .. calloutID.calloutId .. " created.")
                 TriggerClientEvent('SonoranCAD::ErsIntegration::RequestCallout', -1, calloutID.calloutId)
             else
-                debugPrint("Failed to create callout.")
+                debugLog("Failed to create callout.")
             end
         end)
     end
     if GetResourceState('night_ers') == 'started' then
-        debugPrint("night ERS resource is started.")
+        debugLog("night ERS resource is started.")
         startErs()
     else
         errorLog("Night ERS resource is not started. Please start the resource before using this submodule.")
     end
     AddEventHandler('onResourceStart', function(resourceName)
         if resourceName == 'night_ers' then
-            debugPrint("night ERS resource started.")
+            debugLog("night ERS resource started.")
             startErs()
         end
     end)

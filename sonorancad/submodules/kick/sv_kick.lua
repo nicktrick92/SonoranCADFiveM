@@ -17,9 +17,15 @@ if pluginConfig.enabled then
         local identifier = GetIdentifiers(source)[Config.primaryIdentifier]
         if not identifier then
             debugLog("kick: no API ID, skip")
-            return
+        else
+            local unit = GetUnitByPlayerId(source)
+            if unit then
+                table.insert(PendingKicks, identifier)
+                debugLog(("kick: pending kick %s"):format(identifier))
+            else
+                debugLog(("kick: no unit found for %s, skip"):format(identifier))
+            end
         end
-        table.insert(PendingKicks, identifier)
     end)
 
     CreateThread(function()

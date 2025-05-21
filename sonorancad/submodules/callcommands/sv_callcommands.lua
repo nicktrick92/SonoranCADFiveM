@@ -200,7 +200,7 @@
                             end
                         end)
                     else
-                        debugPrint("[SonoranCAD] API sending is disabled. Incoming call ignored.")
+                        debugLog("[SonoranCAD] API sending is disabled. Incoming call ignored.")
                     end
                 end)
 
