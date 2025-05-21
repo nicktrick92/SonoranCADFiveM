@@ -86,7 +86,14 @@ function debugLog(message)
     sendConsole("DEBUG", "^7", message)
 end
 
+--[[
+    This function is depreciated and will be removed in a future version.
+    Please use the debugLog function instead.
+    Reason: This function prevents correct information from being sent to the console.
+    It is recommended to use the debugLog function instead.
+]]
 function debugPrint(message)
+    warnLog("WARNING: The function debugPrint is deprecated and will be removed in a future version. Please use the debugLog function instead.")
     debugLog(message)
 end
 

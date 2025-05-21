@@ -20,7 +20,7 @@ if pluginConfig.enabled then
     function HandleTrafficStop(type, source, args, rawCommand)
         local identifier = GetIdentifiers(source)[Config.primaryIdentifier]
         local index = findIndex(identifier)
-        local origin = pluginConfig.origin 
+        local origin = pluginConfig.origin
         local status =  pluginConfig.status
         local priority =  pluginConfig.priority
         local address = LocationCache[source] ~= nil and LocationCache[source].location or 'Unknown'
@@ -71,23 +71,23 @@ if pluginConfig.enabled then
         TriggerEvent("SonoranCAD::trafficstop:cadIncomingTraffic", origin, status, priority, address, postal, title, code, description, units, notes, source)
         if Config.apiSendEnabled then
             local data = {
-                ['serverId'] = Config.serverId, 
-                ['origin'] = origin, 
-                ['status'] = status, 
-                ['priority'] = priority, 
+                ['serverId'] = Config.serverId,
+                ['origin'] = origin,
+                ['status'] = status,
+                ['priority'] = priority,
                 ['block'] = "", -- not used, but required
                 ['postal'] = postal, --TODO
-                ['address'] = address, 
-                ['title'] = title, 
-                ['code'] = code, 
-                ['description'] = description, 
+                ['address'] = address,
+                ['title'] = title,
+                ['code'] = code,
+                ['description'] = description,
                 ['units'] = units,
                 ['notes'] = notes -- required
             }
             debugLog("sending Traffic Stop!")
             performApiRequest({data}, 'NEW_DISPATCH', function() end)
         else
-            debugPrint("[SonoranCAD] API sending is disabled. Traffic Stop ignored.")
+            debugLog("[SonoranCAD] API sending is disabled. Traffic Stop ignored.")
         end
     end)
 
