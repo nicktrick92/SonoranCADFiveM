@@ -32,6 +32,11 @@ jobs:
           git submodule update --remote --merge
         shell: bash
 
+      - name: Move external submodule config.dist.lua files
+        run: |
+          find sonorancad/submodules/ -type f -name '*_config.dist.lua' -exec mv -f {} sonorancad/configuration/ \;
+        shell: bash
+
       - name: Cleanup & Zip Directories
         id: zip-dirs
         run: |
@@ -113,6 +118,11 @@ jobs:
           git submodule sync
           git submodule update --init --recursive
           git submodule update --remote --merge
+        shell: bash
+
+      - name: Move external submodule config.dist.lua files
+        run: |
+          find sonorancad/submodules/ -type f -name '*_config.dist.lua' -exec mv -f {} sonorancad/configuration/ \;
         shell: bash
 
       - name: Cleanup & Zip Directories
