@@ -26,9 +26,10 @@ jobs:
       - name: Clone included submodules
         id: clone-submodules
         run: |
-          git clone https://github.com/Sonoran-Software/wk_wars2x.git wk_wars2x
-          git clone https://github.com/Sonoran-Software/id_card_ui.git sonoran_idcard
-          git clone https://github.com/DevBlocky/nearest-postal.git nearest-postal
+          git submodule deinit -f --all
+          git submodule sync
+          git submodule update --init --recursive
+          git submodule update --remote --merge
         shell: bash
 
       - name: Cleanup & Zip Directories
@@ -108,8 +109,10 @@ jobs:
       - name: Clone included submodules
         id: clone-submodules
         run: |
-          git clone https://github.com/Sonoran-Software/wk_wars2x.git wk_wars2x
-          git clone https://github.com/Sonoran-Software/id_card_ui.git sonoran_idcard
+          git submodule deinit -f --all
+          git submodule sync
+          git submodule update --init --recursive
+          git submodule update --remote --merge
         shell: bash
 
       - name: Cleanup & Zip Directories
