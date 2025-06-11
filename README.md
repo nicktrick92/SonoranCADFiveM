@@ -32,3 +32,9 @@ git submodule sync
 git submodule update --init --recursive
 git submodule update --remote --merge
 ```
+
+### Resetting Git Submodule links to commited links
+If you want to ensure git submodules are pulling the code specified by what has been commited to the repo, run this command before the commands listed above:
+```bash
+git submodule deinit -f --all
+```
