@@ -10,6 +10,31 @@
     pluginAuthor = "SonoranCAD", -- author
     configVersion = "1.0",
     callCoolDown = 60, -- Time in between calls in seconds
+    callTypes = {
+        gun = true, -- Enable or disable gun-related calls
+        carJacking = true, -- Enable or disable carjacking calls
+        death = true, -- Enable or disable death-related calls
+    },
+    callTimers = {
+        -- Time in seconds for each call type
+        gun = 30, -- Time for gun-related calls
+        carJacking = 15, -- Time for carjacking calls
+        death = 10, -- Time for death-related calls
+    },
+    whitelistZones = {
+        {
+            name = "Police Station",
+            center = vector3(441.2, -981.8, 30.6),
+            radius = 60.0,
+            whitelistTypes = { "death", "carjacking" } -- allowed to report these, others ignored
+        },
+        {
+            name = "Hospital",
+            center = vector3(295.1, -1446.8, 29.9),
+            radius = 50.0,
+            whitelistTypes = {} -- nothing gets reported here
+        }
+    },
     clothingConfig = {
         -- Array of clothing items that will be whitelisted from triggering 911 calls
         whiteList = {
