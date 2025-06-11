@@ -18,3 +18,17 @@ Sonoran CAD's API offers direct access to your CAD data, making it very useful t
 Get PAID to contribute to the open source project!!!
 
 Sonoran Software offers 💵CASH💵 for contributing to the open source integration framework plugin library. Check out more information [here](https://info.sonorancad.com/sonoran-cad/developer-bounties).
+
+## Developing: Working with submodules
+If you are developing this source code we utilize git submodules in order to bundle 3rd party resources and external CAD submodules. In order to "clone" the submodules you will need to run some additional git commands each time you pull. 
+
+The commands below will clone the git submodules and ensure your submodules are synced to the commit hash/branch/tag you have selected in your git CLI/GUI/IDE (ie. VS Code). When cloning the repo your first time, this will sync to the commit hashes pushed to the repo. Updating the branch of the submodules in your IDE will change what code is pulled for that particular submodule.
+
+After Cloning Repository
+Run the following commands after cloning to ensure the git submodule files are cloned...
+
+```bash
+git submodule sync
+git submodule update --init --recursive
+git submodule update --remote --merge
+```
